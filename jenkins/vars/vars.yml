@@ -1,0 +1,8 @@
+eksctl_url: "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz"
+eksctl_version: latest
+
+kubectl_version: 1.18.9
+kubectl_url: "https://amazon-eks.s3.us-west-2.amazonaws.com/{{ kubectl_version }}/2020-11-02/bin/linux/amd64/kubectl"
+
+aws_cli_version: "aws-cli/2"
+aws_cli_url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"

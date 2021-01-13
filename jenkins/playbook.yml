@@ -1,0 +1,62 @@
+---
+- name: initalize jenkins machine
+  hosts: localhost
+  tasks:
+    - name: create security group
+      amazon.aws.ec2_group:
+        name: jenkins
+        description: sg with rule descriptions
+        vpc_id: vpc-534d3034
+        region: us-west-2
+        rules:
+          - proto: tcp
+            ports:
+            - 80
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 80
+          - proto: tcp
+            ports:
+              - 22
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 22
+
+    - name: create jenkins ec2 host
+      amazon.aws.ec2:
+        key_name: ec2-operations
+        instance_type: t2.micro
+        image: ami-08d489468314a58df
+        wait: yes
+        group: jenkins
+        count: 1
+        vpc_subnet_id: subnet-7f9f9d27
+        assign_public_ip: yes
+        state: present
+        region: us-west-2
+        instance_tags:
+          cust: me
+          env: dev
+          type: jenkins
+      register: ec2
+
+    - name: debug
+      debug:
+        msg: "{{ ec2 }}"
+
+    - name: Wait for SSH to come up
+      delegate_to: "{{ item.public_dns_name }}"
+      wait_for_connection:
+        delay: 60
+        timeout: 320
+      loop: "{{ ec2.instances }}"
+    
+    - name: get public ip 
+      set_fact:
+        jenkins_name: "{{ ec2.instance[0].public_dns_name }}"
+
+
+
+
+        
+
+
+        

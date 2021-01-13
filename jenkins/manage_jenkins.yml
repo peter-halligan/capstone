@@ -1,0 +1,10 @@
+---
+- name: manage instance state
+  hosts: localhost
+  tasks:
+    - name: toggle jenkins state using -e "state=running" or -e "state=stopped"
+      amazon.aws.ec2:
+        region: us-west-2
+        instance_tags:
+          type: jenkins
+        state: "{{ state | default('stopped') }}"

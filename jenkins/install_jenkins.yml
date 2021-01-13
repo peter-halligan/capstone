@@ -1,0 +1,58 @@
+---
+- name: Install java and jenkins
+  hosts: all
+  remote_user: ec2-user
+  vars_files:
+    - ./vars/credentials_vault.yml
+  roles:
+    - role: geerlingguy.java
+      become: yes
+      vars:
+        java_packages:
+          - java-1.8.0-openjdk
+      
+    - role: geerlingguy.jenkins
+      become: yes
+      vars:
+        jenkins_hostname: ec2-52-24-16-198.us-west-2.compute.amazonaws.com
+        jenkins_process_user: ec2-user
+        jenkins_process_group: ec2-user
+        jenkins2_https_enabled: false
+        jenkins_admin_username: "{{ credentials_vault['jenkins_cli_username']}}"
+        jenkins_admin_password: "{{ credentials_vault['jenkins_cli_password']}}"
+        jenkins_plugins:
+          - ant
+          - antisamy-markup-formatter
+          - blueocean
+          - configuration-as-code
+          - build-timeout
+          - cloudbees-folder
+          - credentials-binding
+          - ec2
+          - email-ext
+          - file-operations
+          - git
+          - gitlab-plugin
+          - gradle
+          - ldap
+          - mailer
+          - matrix-auth
+          - pipeline-stage-view
+          - pipeline-utility-steps
+          - ssh-agent
+          - ssh-slaves
+          - timestamper
+          - workflow-aggregator
+          - ws-cleanup
+          - job-dsl
+          - sonar
+          - checkstyle
+          - log-parser
+          - pmd
+          - warnings-ng
+          - permissive-script-security
+          - pipeline-aws
+
+          
+
+      

@@ -1,0 +1,111 @@
+---
+- name: install jenkins
+  hosts: all
+  remote_user: ec2-user
+  tasks:
+    - name: load vars
+      include_vars:
+        file: vars.yml
+
+    - name: install aws cli
+      block:
+        - name: version
+          command: aws --version
+          register: aws_installed_version
+          changed_when: false
+          failed_when: false
+
+        - block:
+            - name: get aws cli 2
+              get_url:
+                url: "{{ aws_cli_url }}"
+                dest: "/tmp/awscliv2.zip"
+                mode: '777'
+
+            - name: unzip bundle
+              unarchive:
+                src: "/tmp/awscliv2.zip"
+                dest: "/tmp/"
+                remote_src: yes
+
+            - name: create aws-cli dir
+              file:
+                path: /usr/local/aws-cli
+                state: directory
+              become_user: root
+              become: true
+
+            - name: create aws-cli dir
+              file:
+                path: /usr/local/bin
+                state: directory
+              become_user: root
+              become: true
+
+
+            - name: instal aws cli 2
+              command: "./aws/install -i /usr/local/aws-cli -b /usr/local/bin"
+              args:
+                chdir: /tmp
+              become_user: root
+              become: true
+            
+            - name: test aws cli install
+              shell: "which aws"
+            
+            - name: aws version
+              shell: aws --version
+          when: >
+            aws_installed_version.stdout is not defined
+            or aws_cli_version not in aws_installed_version.stdout
+
+    - name: install eksctl
+      block:
+        - name: version
+          command: eksctl version
+          register: eksctl_installed_version
+          changed_when: false
+          failed_when: false
+
+        - block:
+            - name: download
+              get_url:
+                url: "{{ eksctl_url }}"
+                dest: /tmp
+
+            - name: unarchive
+              unarchive:
+                src: /tmp/eksctl_Linux_amd64.tar.gz
+                dest: /usr/local/bin/
+                remote_src: true
+                owner: root
+                group: root
+                mode: '0755'
+              become: true
+          when: >
+            eksctl_installed_version.stdout is not defined
+            or eksctl_version not in eksctl_installed_version.stdout
+
+    - name: install kubectl
+      block:
+        - name: kubectl version
+          command: kubectl version --short --client
+          register: kubectl_installed_version
+          changed_when: false
+          failed_when: false
+
+        - block:
+            - name: download kubectl
+              get_url:
+                url: "{{ kubectl_url }}"
+                dest: /usr/local/bin/kubectl
+                mode: '0755'
+              become: true
+          when: >
+            kubectl_installed_version.stdout is not defined
+            or kubectl_version not in kubectl_installed_version.stdout
+              
+          
+  roles:
+    - role: lean_delivery.java
+    
