@@ -1,0 +1,4 @@
+pylint==2.5.3
+pytest==5.4.3
+flask
+
