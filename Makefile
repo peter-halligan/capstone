@@ -1,5 +1,5 @@
 setup:
-	python3 -m venv ~/.capstone
+	python -m venv ~/.capstone
 
 install:
 	. ~/.capstone/bin/activate &&\
