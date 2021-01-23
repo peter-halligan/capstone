@@ -1,7 +1,7 @@
 pipeline {
     environment {
         registry = "phalligan/capstone"
-        registryCredential = 'DOCKER_CREDENTIALS'
+        registryCredential = 'DOCKER_HUB_CREDENTIALS'
         version = '0.0.2'
     }
     agent any
@@ -47,13 +47,13 @@ pipeline {
                 }
             }
 
-            stage('Deploy Updated Image to Cluster'){
-                steps {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh 'kubectl apply -f ./kubernetes/deploy-hello-green.yml'
-					sh 'kubectl apply -f ./kubernetes/service-hello-green.yml'
-                }
-            }
+            // stage('Deploy Updated Image to Cluster'){
+            //     steps {
+            //         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            //         sh 'kubectl apply -f ./kubernetes/deploy-hello-green.yml'
+			// 		sh 'kubectl apply -f ./kubernetes/service-hello-green.yml'
+            //     }
+            // }
         }
     }
 }
