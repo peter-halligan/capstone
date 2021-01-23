@@ -6,7 +6,6 @@
     - name: load vars
       include_vars:
         file: vars.yml
-
     - name: install aws cli
       block:
         - name: version

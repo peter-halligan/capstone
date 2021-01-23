@@ -1,6 +1,8 @@
 ---
 - name: initalize jenkins machine
   hosts: localhost
+  vars:
+    ansible_ssh_private_key_file: "~/.ssh/ec2-operations.pem"
   tasks:
     - name: create security group
       amazon.aws.ec2_group:
@@ -24,7 +26,7 @@
       amazon.aws.ec2:
         key_name: ec2-operations
         instance_type: t2.micro
-        image: ami-08d489468314a58df
+        image: ami-0a36eb8fadc976275
         wait: yes
         group: jenkins
         count: 1
@@ -48,10 +50,11 @@
         delay: 60
         timeout: 320
       loop: "{{ ec2.instances }}"
+      remote_user: ec2-user
     
     - name: get public ip 
       set_fact:
-        jenkins_name: "{{ ec2.instance[0].public_dns_name }}"
+        jenkins_name: "{{ ec2.instances[0].public_dns_name }}"
 
 
 

@@ -10,11 +10,12 @@
       vars:
         java_packages:
           - java-1.8.0-openjdk
+        java_home: "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.272.b10-1.amzn2.0.1.x86_64/jre"
       
     - role: geerlingguy.jenkins
       become: yes
       vars:
-        jenkins_hostname: ec2-52-24-16-198.us-west-2.compute.amazonaws.com
+        jenkins_hostname: ec2-54-245-169-74.us-west-2.compute.amazonaws.com
         jenkins_process_user: ec2-user
         jenkins_process_group: ec2-user
         jenkins2_https_enabled: false
@@ -52,7 +53,3 @@
           - warnings-ng
           - permissive-script-security
           - pipeline-aws
-
-          
-
-      
