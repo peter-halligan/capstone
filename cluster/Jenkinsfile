@@ -1,0 +1,48 @@
+DEPLOY_CLUSTER = 0
+
+pipeline {
+	agent any
+	stages {
+        stage('setup'){
+            steps{
+                withAWS(region:'us-west-2', credentials:'AWS_CREDENTIALS') {
+                    script {
+                        DEPLOY_CLUSTER = sh( script: "/usr/local/bin/eksctl get cluster --name=capstone", returnStatus: true )
+                    }
+                }
+            }
+        }
+		stage('Create kubernetes cluster') {
+            when {
+                expression {
+                    DEPLOY_CLUSTER == 1
+                }
+            }
+			steps {
+				withAWS(region:'us-west-2', credentials:'AWS_CREDENTIALS') {
+					sh '''
+						eksctl create cluster \
+						--name capstone \
+						--nodegroup-name standard-workers \
+						--node-type t2.small \
+						--nodes 2 \
+						--nodes-min 1 \
+						--nodes-max 3 \
+						--node-ami auto
+					'''
+				}
+			}
+		}
+
+		stage('Create conf file cluster') {
+			steps {
+				withAWS(region:'us-west-2', credentials:'AWS_CREDENTIALS') {
+					sh '''
+						aws eks --region us-west-2 update-kubeconfig --name capstone
+					'''
+				}
+			}
+		}
+
+	}
+}
