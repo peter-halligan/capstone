@@ -47,12 +47,26 @@ pipeline {
             }
         }
 
-        // stage('Deploy Updated Image to Cluster'){
-        //     steps {
-        //         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-        //         sh 'kubectl apply -f ./kubernetes/deploy-hello-green.yml'
-        // 		sh 'kubectl apply -f ./kubernetes/service-hello-green.yml'
-        //     }
-        // }
+        stage('Deploy to green'){
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    withAWS(region:'us-west-2', credentials:'AWS_CREDENTIALS') {
+                        sh '''    
+                            /usr/local/bin/kubectl apply -f ./kubernetes/deploy-hello-green.yml
+
+                            ATTEMPTS=0
+                            ROLLOUT_STATUS_CMD="/usr/local/bin/kubectl rollout status deployment/myapp"
+                            until $ROLLOUT_STATUS_CMD || [ $ATTEMPTS -eq 60 ]; do
+                                $ROLLOUT_STATUS_CMD
+                                ATTEMPTS=$((attempts + 1))
+                                sleep 10
+                            done
+
+                            /usr/local/bin/kubectl apply -f ./kubernetes/service-hello-green.yml
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
