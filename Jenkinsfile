@@ -52,17 +52,17 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     withAWS(region:'us-west-2', credentials:'AWS_CREDENTIALS') {
                         sh '''    
-                            /usr/local/bin/kubectl apply -f ./kubernetes/deploy-hello-green.yml
+                            /usr/local/bin/kubectl apply -f ./kubernetes/green/deploy-hello-green.yml
 
                             ATTEMPTS=0
-                            ROLLOUT_STATUS_CMD="/usr/local/bin/kubectl rollout status deployment/myapp"
+                            ROLLOUT_STATUS_CMD="/usr/local/bin/kubectl rollout status deployment/hello-green"
                             until $ROLLOUT_STATUS_CMD || [ $ATTEMPTS -eq 60 ]; do
                                 $ROLLOUT_STATUS_CMD
                                 ATTEMPTS=$((attempts + 1))
                                 sleep 10
                             done
 
-                            /usr/local/bin/kubectl apply -f ./kubernetes/service-hello-green.yml
+                            /usr/local/bin/kubectl apply -f ./kubernetes/green/service-hello-green.yml
                         '''
                     }
                 }

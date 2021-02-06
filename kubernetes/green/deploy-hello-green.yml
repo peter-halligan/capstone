@@ -18,7 +18,7 @@ spec:
       containers:
       - name: hello-world
         image: phalligan/capstone:0.0.2
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         ports:
          - containerPort: 8081
 
