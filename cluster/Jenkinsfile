@@ -21,14 +21,18 @@ pipeline {
 			steps {
 				withAWS(region:'us-west-2', credentials:'AWS_CREDENTIALS') {
 					sh '''
-						eksctl create cluster \
+						/usr/local/bin/eksctl create cluster \
 						--name capstone \
-						--nodegroup-name standard-workers \
-						--node-type t2.small \
 						--nodes 2 \
 						--nodes-min 1 \
 						--nodes-max 3 \
+						--node-type t2.small \
 						--node-ami auto
+						--with-oidc \
+						--ssh-access \
+						---ssh-public-key ec2-operations \
+						--managed
+
 					'''
 				}
 			}
@@ -41,6 +45,7 @@ pipeline {
 						aws eks --region us-west-2 update-kubeconfig --name capstone
 					'''
 				}
+				
 			}
 		}
 
